@@ -43,7 +43,7 @@
             </div>
 
             <div class="layui-row" style="border: 2px solid orange; padding: 10px; min-height: 450px;">
-                <div class="layui-row">当前路径: <span class="current_path" current-path="/">/</span></div>
+                <div class="layui-row">当前路径: <span class="current_path" data="/">/</span></div>
                 
                 <div class="layui-row">
                     <table id="file-explorer" class="layui-table" lay-skin="nob" lay-size="lg"></table>
@@ -115,9 +115,10 @@
         };
 
         var loadFiles = function(){
+            var current_path = $(".current_path").attr("data")
             table.render({
                 elem: '#file-explorer'
-                ,url: '/api/v1/filelist?path='+ $('#file_explorer').attr('current-path')
+                ,url: '/api/v1/filelist?path='+ current_path
                 ,page: false
                 ,parseData: function(res){
                     return {
@@ -192,7 +193,7 @@
                     url:  "/api/v1/createdir",
                     type: "POST",
                     data: {
-                        cur: $('#file_explorer').attr('current-path'),
+                        cur: $('#current_path').attr('data'),
                         dirname: name
                     },
                     success: function(d){
@@ -212,7 +213,7 @@
         var uploadListIns = upload.render({
             elem: '#action_upload' //绑定元素
             ,elemList: $('#fileUploadList') //列表元素对象
-            ,url: '/api/v1/upload?path='+ $('#file_explorer').attr('current-path')
+            ,url: '/api/v1/upload?path='+ $('.current_path').attr('data')
             ,accept: 'file'
             ,multiple: true
             ,number: 30
