@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type response struct {
@@ -30,15 +31,15 @@ func Run() {
 }
 
 func startGin() {
-	r := gin.Default()
+	route := gin.Default()
 	gin.SetMode(gin.DebugMode)
 
-	r.LoadHTMLGlob("./*.html")
+	route.LoadHTMLGlob("./*.html")
 
-	r.GET("/", index)
-	r.GET("/filelist", fileList)
-	r.POST("/upload", upload)
-	r.Run(":8080")
+	route.GET("/", index)
+	route.GET("/filelist", fileList)
+	route.POST("/upload", upload)
+	route.Run(":8080")
 }
 
 func index(c *gin.Context) {
@@ -50,10 +51,18 @@ func index(c *gin.Context) {
 }
 
 func upload(c *gin.Context) {
+	curPath := c.Query("path")
 	file, _ := c.FormFile("file")
 
-	c.SaveUploadedFile(file, "./upload/"+file.Filename)
+	filepath := GloOptions.Dir + curPath + "/" + file.Filename
+	err := c.SaveUploadedFile(file, filepath)
+	if err != nil {
+		logrus.Errorf("upload file error: %v", err)
+		c.JSON(http.StatusOK, &response{Ok: false, Reason: "upload file error: %v"})
+		return
+	}
 
+	logrus.Infof("upload file success: %s", filepath)
 	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
 }
 

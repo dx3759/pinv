@@ -28,7 +28,7 @@
             </div>
 
             <div class="layui-row" style="border: 2px solid orange; padding: 10px;">
-                <div id="file_explorer" path="/"></div>
+                <div id="file_explorer" current-path="/"></div>
             </div>
             
 
@@ -38,7 +38,8 @@
             </div>
 
 
-            <div class="upload_list" style="position: fixed; bottom: 10px; border: 0; z-index:9999;">
+            <div class="upload_list_area" style="position: fixed; bottom: 10px; border: 0; z-index:9900; display: block;">
+                <div class="close" style="position:absolute; right:0px; top:5px;z-index:9901;cursor: pointer;"><i class="layui-icon layui-icon-close-fill"></i></div>
                 <div class="layui-upload">
                     <div class="layui-upload-list" style="width: 1140px;">
                       <table class="layui-table">
@@ -57,7 +58,9 @@
                         <tbody id="fileUploadList"></tbody>
                       </table>
                     </div>
-                    <!-- <button type="button" class="layui-btn" id="testListAction">开始上传</button> -->
+                    <div style="text-align: center;">
+                        <button type="button" class="layui-btn" id="uploadListAction">开始上传</button>
+                    </div>
                   </div>
             </div>
         </div>
@@ -80,7 +83,7 @@
 
         var loadFiles = function(){
             $.ajax({
-                url: '/filelist?path='+ $('#file_explorer').attr('path'),
+                url: '/filelist?path='+ $('#file_explorer').attr('current-path'),
                 type: 'get',
                 dataType: 'json',
                 success: function(res){
@@ -138,22 +141,30 @@
                 }
             });
         };
+        
+        var reloadFilesExplorer = function(){ loadFiles();};
 
 
+
+        $(".close").on("click", function(){
+            $(".upload_list_area").hide();
+        });
 
         //多文件列表上传
         var uploadListIns = upload.render({
             elem: '#action_upload' //绑定元素
             ,elemList: $('#fileUploadList') //列表元素对象
-            ,url: '/upload' //此处用的是第三方的 http 请求演示，实际使用时改成您自己的上传接口即可。
+            ,url: '/upload?path='+ $('#file_explorer').attr('current-path')
             ,accept: 'file'
             ,multiple: true
             ,number: 3
-            ,auto: true
-            ,bindAction: '#testListAction'
-            ,choose: function(obj){   
+            ,auto: false
+            ,bindAction: '#uploadListAction'
+            ,choose: function(obj){ 
+                $(".upload_list_area").show();
+                
                 var that = this;
-                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                var files = this.files = obj.pushFile();
                 //读取本地文件
                 obj.preview(function(index, file, result){
                     var tr = $(['<tr id="upload-'+ index +'">'
@@ -184,17 +195,22 @@
             }
             ,done: function(res, index, upload){ //成功的回调
                 var that = this;
-                //if(res.code == 0){ //上传成功
+                if(res.ok){ //上传成功
                     var tr = that.elemList.find('tr#upload-'+ index)
                     ,tds = tr.children();
                     tds.eq(3).html(''); //清空操作
                     delete this.files[index]; //删除文件队列已经上传成功的文件
+                    
+                    reloadFilesExplorer();
+                    setTimeout(function(){
+                        tr.remove();
+                    }, 5e3);
                     return;
-                //}
+                }
                 this.error(index, upload);
             }
             ,allDone: function(obj){ //多文件上传完毕后的状态回调
-                console.log(obj)
+                $(".upload_list_area").hide();
             }
             ,error: function(index, upload){ //错误回调
                 var that = this;
