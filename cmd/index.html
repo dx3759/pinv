@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>YmFile轻量级http文件分享管理工具</title>
+    <link rel="stylesheet" type="text/css" href="//www.layuicdn.com/layui/css/layui.css" />
+</head>
+
+<body>
+    <div style="position: fixed; top: 0; right: 0; border: 0; z-index:9999;">
+        <a target="_blank" href="https://github.com/yzimhao/ymfile" class="github-corner"aria-label="View source on GitHub"><svg width="80"height="80"viewBox="0 0 250 250"style="fill:#64CEAA; color:#fff; position: absolute; top: 0; border: 0; right: 0;"aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"fill="currentColor"style="transform-origin: 130px 106px;"class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"fill="currentColor"class="octo-body"></path></svg></a><style>.github-corner:hover.octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media(max-width:500px){.github-corner:hover.octo-arm{animation:none}.github-corner.octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    </div>
+
+
+    
+
+    <div class="layui-main">
+        <div class="layui-container">
+            <div class="layui-header header" style="background-color: #23262e;">
+                <div class="layui-col-md2" style="height: 60px; line-height: 60px; color:#fafafa; left: 10px; font-size: larger;">YmFile <span style="font-size: small;">v0.0.1</span></div>
+            </div>
+
+            <div class="layui-row tools" style="margin: 20px;">
+                <div class="layui-col-md12">
+                    <button type="button" class="layui-btn layui-btn-normal" id="action_upload">上传</button>
+                    <button type="button" class="layui-btn layui-btn-normal" id="action_upload">下载</button>
+                </div>
+            </div>
+
+            <div class="layui-row" style="border: 2px solid orange; padding: 10px;">
+                <div id="file_explorer" path="/"></div>
+            </div>
+            
+
+
+            <div class="layui-footer footer" style="height: 50px; line-height:50px; background-color:#fafafa;">
+                <p style="text-align: center;">Copyright © 2022 <a href="https://github.com/yzimhao/ymfile" target="_blank">YmFile</a> MIT Licensed</p>
+            </div>
+
+
+            <div class="upload_list" style="position: fixed; bottom: 10px; border: 0; z-index:9999;">
+                <div class="layui-upload">
+                    <div class="layui-upload-list" style="width: 1140px;">
+                      <table class="layui-table">
+                        <colgroup>
+                          <col>
+                          <col>
+                          <col width="260">
+                          <col width="150">
+                        </colgroup>
+                        <thead>
+                          <tr><th>文件名</th>
+                          <th>大小</th>
+                          <th>上传进度</th>
+                          <th>操作</th>
+                        </tr></thead>
+                        <tbody id="fileUploadList"></tbody>
+                      </table>
+                    </div>
+                    <!-- <button type="button" class="layui-btn" id="testListAction">开始上传</button> -->
+                  </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+<script src="//www.layuicdn.com/layui/layui.js"></script>
+<!--您的Layui代码start-->
+<script type="text/javascript">
+    layui.use(['laydate', 'layer','element', 'upload', 'tree', 'util'], function () {
+        var laydate = layui.laydate //日期
+            , layer = layui.layer //弹层
+            , $ = layui.$
+            , tree = layui.tree
+            , util = layui.util
+            , upload = layui.upload
+            , element = layui.element;
+
+        var loadFiles = function(){
+            $.ajax({
+                url: '/filelist?path='+ $('#file_explorer').attr('path'),
+                type: 'get',
+                dataType: 'json',
+                success: function(res){
+                    if(!res.ok){
+                        return layer.msg(res.reason);
+                    }
+
+                    var data = [], files = res.data.files;
+                    for(var i=0; i<files.length; i++){
+                        var file ={
+                            title: function(){
+                                if(files[i].is_dir){
+                                    return '<i class="layui-icon layui-icon-export"></i> ' + files[i].name;
+                                }else{
+                                    var icon = "";
+                                    switch(files[i].content_type){
+                                        case 'image/gif':
+                                        case 'image/jpeg':
+                                        case 'image/png':
+                                        case 'image/bmp':
+                                        case 'image/webp':
+                                        case 'image/x-icon':
+                                            icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
+
+                                        case 'application/pdf':
+                                            icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
+                                        default:
+                                            icon = '<i class="layui-icon layui-icon-file-b"></i>';
+                                    }
+
+                                    return icon +" "+ files[i].name;
+                                }
+                            }(),
+                            id: 1,
+                            field: files[i].name,
+                            checked: false,
+                            spread: false,
+                            children:[]
+                        }
+                        data.push(file);
+                    }
+
+                    tree.render({
+                        elem: '#file_explorer',
+                        data: data,
+                        showCheckbox: true,
+                        id: 'file_main_tree',
+                        isJump: true,
+                        showLine: false,
+                        click: function(obj){
+                            var data = obj.data;  //获取当前点击的节点数据
+                            layer.msg('状态：'+ obj.state + '<br>节点数据：' + JSON.stringify(data));
+                        }
+                    });
+                }
+            });
+        };
+
+
+
+        //多文件列表上传
+        var uploadListIns = upload.render({
+            elem: '#action_upload' //绑定元素
+            ,elemList: $('#fileUploadList') //列表元素对象
+            ,url: '/upload' //此处用的是第三方的 http 请求演示，实际使用时改成您自己的上传接口即可。
+            ,accept: 'file'
+            ,multiple: true
+            ,number: 3
+            ,auto: true
+            ,bindAction: '#testListAction'
+            ,choose: function(obj){   
+                var that = this;
+                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function(index, file, result){
+                    var tr = $(['<tr id="upload-'+ index +'">'
+                    ,'<td>'+ file.name +'</td>'
+                    ,'<td>'+ (file.size/1014).toFixed(1) +'kb</td>'
+                    ,'<td><div class="layui-progress" lay-filter="progress-demo-'+ index +'"><div class="layui-progress-bar" lay-percent=""></div></div></td>'
+                    ,'<td>'
+                        ,'<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        ,'<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                    ,'</td>'
+                    ,'</tr>'].join(''));
+                
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function(){
+                        obj.upload(index, file);
+                    });
+                
+                    //删除
+                    tr.find('.demo-delete').on('click', function(){
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+                
+                    that.elemList.append(tr);
+                    element.render('progress'); //渲染新加的进度条组件
+                });
+            }
+            ,done: function(res, index, upload){ //成功的回调
+                var that = this;
+                //if(res.code == 0){ //上传成功
+                    var tr = that.elemList.find('tr#upload-'+ index)
+                    ,tds = tr.children();
+                    tds.eq(3).html(''); //清空操作
+                    delete this.files[index]; //删除文件队列已经上传成功的文件
+                    return;
+                //}
+                this.error(index, upload);
+            }
+            ,allDone: function(obj){ //多文件上传完毕后的状态回调
+                console.log(obj)
+            }
+            ,error: function(index, upload){ //错误回调
+                var that = this;
+                var tr = that.elemList.find('tr#upload-'+ index)
+                ,tds = tr.children();
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+            }
+            ,progress: function(n, elem, e, index){ //注意：index 参数为 layui 2.6.6 新增
+                element.progress('progress-demo-'+ index, n + '%'); //执行进度条。n 即为返回的进度百分比
+            }
+        });
+
+
+        loadFiles();
+        
+
+    });
+</script>
+</html>
