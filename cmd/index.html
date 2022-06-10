@@ -202,9 +202,7 @@
                     delete this.files[index]; //删除文件队列已经上传成功的文件
                     
                     reloadFilesExplorer();
-                    setTimeout(function(){
-                        tr.remove();
-                    }, 5e3);
+                    tr.remove();
                     return;
                 }
                 this.error(index, upload);
