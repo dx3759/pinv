@@ -38,7 +38,7 @@
                     <button type="button" class="layui-btn layui-btn-normal actbtn" action="refresh">刷新</button>
                     <button type="button" class="layui-btn layui-btn-normal actbtn" action="mkdir">新建文件夹</button>
                     
-                    <button type="button" class="layui-btn layui-btn-normal actbtn" action="del">删除选择</button>
+                    <button type="button" class="layui-btn layui-btn-normal actbtn" action="delete">删除选择</button>
                 </div>
             </div>
 
@@ -183,6 +183,42 @@
                 });
             }else if( act == "refresh"){
                 reloadFilesExplorer();
+            }else if(act == "delete"){                
+                var checkObj = $(".layui-table input[type=checkbox]:checked"); 
+                
+                if(checkObj.length > 0){
+
+                    layer.confirm("删除无法恢复，请再次确认是否删除?", {
+                        title: "删除确认",
+                        btn: ["确认删除", "取消"],
+                    }, function(){
+                        var needDel = [];
+                        var current_path = $(".current_path").attr("data");
+                        checkObj.each(function(){
+                            needDel.push($(this).parents("tr").find("td:eq(1)").attr("data-content"))
+                        });
+
+                        console.log(needDel, current_path);
+                        $.ajax({
+                            url: "/api/v1/delete",
+                            type: "POST",
+                            data: {
+                                "current_path": current_path,
+                                "filename": needDel
+                            },
+                            success: function(d){
+                                if(d.ok){
+                                    reloadFilesExplorer();
+                                    layer.close(layer.index);                                    
+                                }
+                            }
+
+                        });
+                    }, function(){
+                        layer.close(layer.index);
+                    });
+                    
+                }
             }
         });
         //创建文件夹

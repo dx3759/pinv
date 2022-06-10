@@ -43,6 +43,7 @@ func startGin() {
 		apiV1.GET("/filelist", fileList)
 		apiV1.POST("/upload", upload)
 		apiV1.POST("/createdir", createDir)
+		apiV1.POST("/delete", delete)
 	}
 	route.Run(":8080")
 }
@@ -72,6 +73,19 @@ func createDir(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusOK, &response{Ok: false, Reason: err.Error(), Data: nil})
+	}
+	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
+}
+
+func delete(c *gin.Context) {
+	curPath := c.PostForm("current_path")
+	fileNames := c.PostFormArray("filename[]")
+
+	for _, item := range fileNames {
+		fullPath := fmt.Sprintf("%s/%s/%s", GloOptions.RootDir, curPath, item)
+		//todo exist
+		logrus.Info("delete file ", item, fullPath)
+		os.Remove(fullPath)
 	}
 	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
 }
