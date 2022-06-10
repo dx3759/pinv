@@ -37,8 +37,12 @@ func startGin() {
 	route.LoadHTMLGlob("./*.html")
 
 	route.GET("/", index)
-	route.GET("/filelist", fileList)
-	route.POST("/upload", upload)
+	apiV1 := route.Group("/api/v1")
+	{
+		apiV1.GET("/filelist", fileList)
+		apiV1.POST("/upload", upload)
+		apiV1.POST("/createdir", createDir)
+	}
 	route.Run(":8080")
 }
 
@@ -50,11 +54,25 @@ func index(c *gin.Context) {
 	}
 }
 
+func createDir(c *gin.Context) {
+	dirName := c.PostForm("dirname")
+
+	dirpath := GloOptions.RootDir + "/" + dirName
+	logrus.Infof("create dir name: %s", dirpath)
+
+	err := os.MkdirAll(dirpath, os.ModeDir)
+
+	if err != nil {
+		c.JSON(http.StatusOK, &response{Ok: false, Reason: err.Error(), Data: nil})
+	}
+	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
+}
+
 func upload(c *gin.Context) {
 	curPath := c.Query("path")
 	file, _ := c.FormFile("file")
 
-	filepath := GloOptions.Dir + curPath + "/" + file.Filename
+	filepath := GloOptions.RootDir + curPath + "/" + file.Filename
 	err := c.SaveUploadedFile(file, filepath)
 	if err != nil {
 		logrus.Errorf("upload file error: %v", err)
@@ -68,7 +86,7 @@ func upload(c *gin.Context) {
 
 func fileList(c *gin.Context) {
 
-	root := GloOptions.Dir
+	root := GloOptions.RootDir
 	path := c.Query("path")
 
 	if path == "" || path == "/" {
