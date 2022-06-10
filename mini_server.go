@@ -39,6 +39,7 @@ func startGin() {
 	route.GET("/", index)
 	apiV1 := route.Group("/api/v1")
 	{
+		apiV1.GET("/main", softMain)
 		apiV1.GET("/filelist", fileList)
 		apiV1.POST("/upload", upload)
 		apiV1.POST("/createdir", createDir)
@@ -52,6 +53,13 @@ func index(c *gin.Context) {
 	} else {
 		c.Data(http.StatusOK, "text/html", []byte(indexHtmlString))
 	}
+}
+
+func softMain(c *gin.Context) {
+	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: gin.H{
+		"app_name":    GloOptions.AppName(),
+		"app_version": GloOptions.Version(),
+	}})
 }
 
 func createDir(c *gin.Context) {
@@ -135,15 +143,15 @@ func getContentType(fileName string) string {
 func fileSizeHuman(fbyte int64) string {
 	str := ""
 	if fbyte < 1048576 {
-		str = fmt.Sprintf("%.2fKB", float64(fbyte/1024))
+		str = fmt.Sprintf("%.0fKB", float64(fbyte/1024))
 	} else if fbyte == 1048576 {
 		str = "1MB"
 	} else if fbyte > 1048576 && fbyte < 1073741824 {
-		str = fmt.Sprintf("%.2fMB", float64(fbyte/(1024*1024)))
+		str = fmt.Sprintf("%.0fMB", float64(fbyte/(1024*1024)))
 	} else if fbyte > 1048576 && fbyte == 1073741824 {
 		str = "1GB"
 	} else if fbyte > 1073741824 && fbyte < 1099511627776 {
-		str = fmt.Sprintf("%.2fGB", float64(fbyte/(1024*1024*1024)))
+		str = fmt.Sprintf("%.0fGB", float64(fbyte/(1024*1024*1024)))
 	} else {
 		str = ">1TB"
 	}

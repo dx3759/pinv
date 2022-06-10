@@ -28,20 +28,26 @@
     <div class="layui-main">
         <div class="layui-container">
             <div class="layui-header header" style="background-color: #23262e;">
-                <div class="layui-col-md2" style="height: 60px; line-height: 60px; color:#fafafa; left: 10px; font-size: larger;">YmFile <span style="font-size: small;">v0.0.1</span></div>
+                <div class="layui-col-md2" style="height: 60px; line-height: 60px; color:#fafafa; left: 10px; font-size: larger;"><span class="appName">YmFile</span> <span class="appVer" style="font-size: small;">v0.0.1</span></div>
             </div>
 
             <div class="layui-row tools" style="margin: 20px;">
                 <div class="layui-col-md12">
                     <button type="button" class="layui-btn layui-btn-normal" id="action_upload">上传</button>
-                    <button type="button" class="layui-btn layui-btn-normal actbtn" action="download">下载</button>
+                    <!-- <button type="button" class="layui-btn layui-btn-normal actbtn" action="download">下载</button> -->
+                    <button type="button" class="layui-btn layui-btn-normal actbtn" action="refresh">刷新</button>
                     <button type="button" class="layui-btn layui-btn-normal actbtn" action="mkdir">新建文件夹</button>
+                    
+                    <button type="button" class="layui-btn layui-btn-normal actbtn" action="del">删除选择</button>
                 </div>
             </div>
 
             <div class="layui-row" style="border: 2px solid orange; padding: 10px; min-height: 450px;">
-                <div class="layui-row">当前路径: <span class="path">/</span></div>
-                <div class="layui-row" id="file_explorer" current-path="/"></div>
+                <div class="layui-row">当前路径: <span class="current_path" current-path="/">/</span></div>
+                
+                <div class="layui-row">
+                    <table id="file-explorer" class="layui-table" lay-skin="nob" lay-size="lg"></table>
+                </div>
             </div>
             
 
@@ -85,76 +91,76 @@
 <script src="//www.layuicdn.com/layui/layui.js"></script>
 <!--您的Layui代码start-->
 <script type="text/javascript">
-    layui.use(['laydate', 'layer','element', 'upload', 'tree', 'util'], function () {
+    layui.use(['laydate', 'layer','element', 'upload', 'tree', 'util', 'table'], function () {
         var laydate = layui.laydate //日期
             , layer = layui.layer //弹层
             , $ = layui.$
             , tree = layui.tree
             , util = layui.util
             , upload = layui.upload
+            , table = layui.table
             , element = layui.element;
 
-        var loadFiles = function(){
+        var loadMainInfo = function(){
             $.ajax({
-                url: '/api/v1/filelist?path='+ $('#file_explorer').attr('current-path'),
-                type: 'get',
-                dataType: 'json',
-                success: function(res){
-                    if(!res.ok){
-                        return layer.msg(res.reason);
+                url: "/api/v1/main",
+                type: "GET",
+                success: function(d){
+                    if(d.ok){
+                        $(".appName").html(d.data.app_name);
+                        $(".appVer").html(d.data.app_version)
                     }
-
-                    var data = [], files = res.data.files;
-                    for(var i=0; i<files.length; i++){
-                        var file ={
-                            title: function(){
-                                if(files[i].is_dir){
-                                    return '<i class="layui-icon layui-icon-export"></i> ' + files[i].name;
-                                }else{
-                                    var icon = "";
-                                    switch(files[i].content_type){
-                                        case 'image/gif':
-                                        case 'image/jpeg':
-                                        case 'image/png':
-                                        case 'image/bmp':
-                                        case 'image/webp':
-                                        case 'image/x-icon':
-                                            icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
-
-                                        case 'application/pdf':
-                                            icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
-                                        default:
-                                            icon = '<i class="layui-icon layui-icon-file-b"></i>';
-                                    }
-
-                                    return icon +" "+ files[i].name;
-                                }
-                            }(),
-                            id: 1,
-                            field: files[i].name,
-                            checked: false,
-                            spread: false,
-                            children:[]
-                        }
-                        data.push(file);
-                    }
-
-                    tree.render({
-                        elem: '#file_explorer',
-                        data: data,
-                        showCheckbox: true,
-                        id: 'file_main_tree',
-                        isJump: true,
-                        showLine: false,
-                        text: {
-                            none: "空文件夹",
-                        },
-                        click: function(obj){
-                            var data = obj.data;  //获取当前点击的节点数据
-                            layer.msg('状态：'+ obj.state + '<br>节点数据：' + JSON.stringify(data));
-                        }
-                    });
                 }
+            })
+        };
+
+        var loadFiles = function(){
+            table.render({
+                elem: '#file-explorer'
+                ,url: '/api/v1/filelist?path='+ $('#file_explorer').attr('current-path')
+                ,page: false
+                ,parseData: function(res){
+                    return {
+                        "code": res.ok == true ? 0 : 1,
+                        "msg": res.reason,
+                        "data": res.data.files
+                    };
+                }
+                ,cols: [[
+                {field: 'a', title: '', type:'checkbox'},
+                    {field: 'name', title: '名称', sort: true, templet:function(d){
+                        if(d.is_dir){
+                            return '<i class="layui-icon layui-icon-export"></i> ' + d.name;
+                        }else{
+                            var icon = "";
+                            switch(d.content_type){
+                                case 'image/gif':
+                                case 'image/jpeg':
+                                case 'image/png':
+                                case 'image/bmp':
+                                case 'image/webp':
+                                case 'image/x-icon':
+                                    icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
+
+                                case 'application/pdf':
+                                    icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
+                                default:
+                                    icon = '<i class="layui-icon layui-icon-file-b"></i>';
+                            }
+
+                            return icon +" "+ d.name;
+                        }
+                    }}
+                    ,{field: 'size', title: '大小', sort: true, templet: function(d){
+                        if(d.is_dir){
+                           return "-"; 
+                        }
+                        return d.size;
+                    }}
+                    ,{field: 'last_modified', title: '修改时间', sort: true, templet: function(d){
+                        return util.toDateString(d.last_modified * 1000);
+                    }}
+                ]]
             });
         };
         
@@ -174,6 +180,8 @@
                     title: "新建文件夹名称",
                     content: $("#mkdir").html()
                 });
+            }else if( act == "refresh"){
+                reloadFilesExplorer();
             }
         });
         //创建文件夹
@@ -207,7 +215,7 @@
             ,url: '/api/v1/upload?path='+ $('#file_explorer').attr('current-path')
             ,accept: 'file'
             ,multiple: true
-            ,number: 3
+            ,number: 30
             ,auto: false
             ,bindAction: '#uploadListAction'
             ,choose: function(obj){ 
@@ -272,8 +280,8 @@
         });
 
 
-        loadFiles();
-        
+        loadMainInfo();
+        loadFiles();     
 
     });
 </script>

@@ -15,3 +15,11 @@ func init() {
 		RootDir: "./test",
 	}
 }
+
+func (o Options) AppName() string {
+	return "YMFile"
+}
+
+func (o Options) Version() string {
+	return "v0.0.1"
+}
