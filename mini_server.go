@@ -64,9 +64,10 @@ func softMain(c *gin.Context) {
 }
 
 func createDir(c *gin.Context) {
-	dirName := c.PostForm("dirname")
+	newDirName := c.PostForm("dirname")
+	curDir := c.PostForm("current_path")
 
-	dirpath := GloOptions.RootDir + "/" + dirName
+	dirpath := GloOptions.RootDir + "/" + curDir + "/" + newDirName
 	logrus.Infof("create dir name: %s", dirpath)
 
 	err := os.MkdirAll(dirpath, os.ModeDir)
@@ -91,36 +92,46 @@ func delete(c *gin.Context) {
 }
 
 func upload(c *gin.Context) {
-	curPath := c.Query("path")
+	curPath := c.Query("current_path")
 	file, _ := c.FormFile("file")
 
-	filepath := GloOptions.RootDir + curPath + "/" + file.Filename
-	err := c.SaveUploadedFile(file, filepath)
+	savePath := GloOptions.RootDir + curPath + "/" + file.Filename
+	err := c.SaveUploadedFile(file, savePath)
 	if err != nil {
 		logrus.Errorf("upload file error: %v", err)
 		c.JSON(http.StatusOK, &response{Ok: false, Reason: "upload file error: %v"})
 		return
 	}
 
-	logrus.Infof("upload file success: %s", filepath)
+	logrus.Infof("upload file success: %s", savePath)
 	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
 }
 
 func fileList(c *gin.Context) {
 
-	root := GloOptions.RootDir
-	path := c.Query("path")
+	current_path := c.Query("current_path")
 
-	if path == "" || path == "/" {
-		path = root
+	if current_path == "" {
+		current_path = GloOptions.RootDir
+	} else {
+		current_path = fmt.Sprintf("%s%s", GloOptions.RootDir, current_path)
 	}
-	//todo 安全验证
 
-	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: gin.H{"path": path, "files": getFile(path)}})
+	logrus.Info(GloOptions.RootDir, "  ", current_path)
+
+	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: gin.H{"path": current_path, "files": getFiles(current_path)}})
 }
 
-func getFile(pathName string) []FileInfo {
+func getFiles(pathName string) []FileInfo {
 	files := make([]FileInfo, 0)
+
+	logrus.Warn(pathName)
+	if pathName != GloOptions.RootDir {
+		files = append(files, FileInfo{
+			Name:  "..",
+			IsDir: true,
+		})
+	}
 
 	rd, err := ioutil.ReadDir(pathName)
 	if err != nil {

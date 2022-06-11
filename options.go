@@ -12,7 +12,7 @@ func init() {
 	GloOptions = Options{
 		Host:    "localhost",
 		Port:    8080,
-		RootDir: "./test",
+		RootDir: "./test/",
 	}
 }
 

@@ -43,7 +43,7 @@
             </div>
 
             <div class="layui-row" style="border: 2px solid orange; padding: 10px; min-height: 450px;">
-                <div class="layui-row">当前路径: <span class="current_path" data="/">/</span></div>
+                <div class="layui-row">当前路径: <span class="current_path">/</span></div>
                 
                 <div class="layui-row">
                     <table id="file-explorer" class="layui-table" lay-skin="nob" lay-size="lg"></table>
@@ -114,11 +114,28 @@
             })
         };
 
+        var currentPath = ["/"];
+        var updateCurrentPath = function(next){
+            if(next == "../"){
+                currentPath.splice(currentPath.length-1, 1);
+            }else{
+                currentPath.push(next);
+            }
+            console.log("set", currentPath);
+            $(".current_path").html(getCurrentPath());
+            reloadFilesExplorer();
+        };
+        var getCurrentPath = function(){
+            console.log("get", currentPath);
+            return currentPath.join("");
+        };
+        
+
         var loadFiles = function(){
-            var current_path = $(".current_path").attr("data")
+            var current_path = getCurrentPath();
             table.render({
                 elem: '#file-explorer'
-                ,url: '/api/v1/filelist?path='+ current_path
+                ,url: '/api/v1/filelist?current_path='+ current_path
                 ,page: false
                 ,parseData: function(res){
                     return {
@@ -131,7 +148,10 @@
                 {field: 'a', title: '', type:'checkbox'},
                     {field: 'name', title: '名称', sort: true, templet:function(d){
                         if(d.is_dir){
-                            return '<i class="layui-icon layui-icon-export"></i> ' + d.name;
+                            var txt = "<a class='childdir' href='javascript:;'>";
+                            txt += '<i class="layui-icon layui-icon-export"></i>' + d.name;
+                            txt += "</a>";
+                            return txt;
                         }else{
                             var icon = "";
                             switch(d.content_type){
@@ -193,7 +213,7 @@
                         btn: ["确认删除", "取消"],
                     }, function(){
                         var needDel = [];
-                        var current_path = $(".current_path").attr("data");
+                        var current_path = getCurrentPath();
                         checkObj.each(function(){
                             needDel.push($(this).parents("tr").find("td:eq(1)").attr("data-content"))
                         });
@@ -229,7 +249,7 @@
                     url:  "/api/v1/createdir",
                     type: "POST",
                     data: {
-                        cur: $('#current_path').attr('data'),
+                        current_path: getCurrentPath(),
                         dirname: name
                     },
                     success: function(d){
@@ -242,6 +262,14 @@
                 })
             }            
         });
+        //进入子文件夹
+        $("body").on("click", ".childdir", function(){
+            var dirname = $(this).parents("td").attr("data-content");
+            updateCurrentPath(dirname+"/");
+            uploadListIns.reload({
+                url: '/api/v1/upload?path='+ getCurrentPath()
+            });
+        });
 
 
 
@@ -249,7 +277,7 @@
         var uploadListIns = upload.render({
             elem: '#action_upload' //绑定元素
             ,elemList: $('#fileUploadList') //列表元素对象
-            ,url: '/api/v1/upload?path='+ $('.current_path').attr('data')
+            ,url: '/api/v1/upload?current_path='+ getCurrentPath()
             ,accept: 'file'
             ,multiple: true
             ,number: 30
