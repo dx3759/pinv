@@ -83,6 +83,9 @@ func delete(c *gin.Context) {
 	fileNames := c.PostFormArray("filename[]")
 
 	for _, item := range fileNames {
+		if item == "" || item == ".." || item == "." {
+			continue
+		}
 		fullPath := fmt.Sprintf("%s/%s/%s", GloOptions.RootDir, curPath, item)
 		//todo exist
 		logrus.Info("delete file ", item, fullPath)
@@ -94,6 +97,10 @@ func delete(c *gin.Context) {
 func upload(c *gin.Context) {
 	curPath := c.Query("current_path")
 	file, _ := c.FormFile("file")
+	if curPath == "" {
+		c.JSON(http.StatusOK, &response{Ok: false, Reason: "current path error"})
+		return
+	}
 
 	savePath := GloOptions.RootDir + curPath + "/" + file.Filename
 	err := c.SaveUploadedFile(file, savePath)

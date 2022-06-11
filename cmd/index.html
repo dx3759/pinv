@@ -57,7 +57,7 @@
             </div>
 
 
-            <div class="upload_list_area" style="position: fixed; bottom: 10px; border: 0; z-index:9900; display: none;">
+            <div class="upload_list_area layui-bg-gray" style="position: fixed; padding-bottom: 10px; bottom: 0px; border: 0; z-index:9900; display: none;">
                 <div class="close" style="position:absolute; right:0px; top:5px;z-index:9901;cursor: pointer;"><i class="layui-icon layui-icon-close-fill"></i></div>
                 <div class="layui-upload">
                     <div class="layui-upload-list" style="width: 1140px;">
@@ -116,8 +116,10 @@
 
         var currentPath = ["/"];
         var updateCurrentPath = function(next){
-            if(next == "../"){
+            if(next == "../" && currentPath.length > 1){
                 currentPath.splice(currentPath.length-1, 1);
+            }else if(next == "../" && currentPath.length == 1){
+                //nothing
             }else{
                 currentPath.push(next);
             }
@@ -267,7 +269,7 @@
             var dirname = $(this).parents("td").attr("data-content");
             updateCurrentPath(dirname+"/");
             uploadListIns.reload({
-                url: '/api/v1/upload?path='+ getCurrentPath()
+                url: '/api/v1/upload?current_path='+ getCurrentPath()
             });
         });
 
@@ -281,7 +283,7 @@
             ,accept: 'file'
             ,multiple: true
             ,number: 30
-            ,auto: false
+            ,auto: true
             ,bindAction: '#uploadListAction'
             ,choose: function(obj){ 
                 $(".upload_list_area").show();
