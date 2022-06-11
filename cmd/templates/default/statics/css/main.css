@@ -1,0 +1,53 @@
+
+.header {
+    background-color: #23262e;
+}
+
+.header .logo{
+    height: 60px; 
+    line-height: 60px; 
+    color:#fafafa; 
+    left: 10px; 
+    font-size: larger;
+}
+
+.header .right-icon {
+    float: right;
+}
+.header .right-icon a{
+    color: #fafafa;
+    height: 60px; 
+    line-height:60px; 
+    right:10px;
+    margin: 0px 5px 0px 5px;
+}
+
+
+.layui-container .tools {
+    margin: 20px;
+}
+
+.layui-container .explorer-main {
+    border: 2px solid orange; padding: 10px; min-height: 450px;
+}
+
+
+.footer {
+    height: 50px; line-height:50px; background-color:#fafafa;
+}
+.footer p {
+    text-align: center;
+}
+
+
+
+
+.upload_list_area {
+    position: fixed; padding-bottom: 10px; bottom: 0px; border: 0; z-index:9900; display: none;
+}
+.upload_list_area .close {
+    position:absolute; right:0px; top:5px;z-index:9901;cursor: pointer;
+}
+.upload_list_area .layui-upload-list{
+    width: 1140px;
+}

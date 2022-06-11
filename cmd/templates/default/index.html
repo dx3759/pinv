@@ -4,7 +4,9 @@
     <meta charset="utf-8" />
     <title>YmFile轻量级http文件分享管理工具</title>
     <link rel="stylesheet" type="text/css" href="//www.layuicdn.com/layui/css/layui.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" type="text/css" href="/statics/css/main.css" />
+    
 </head>
 
 
@@ -24,15 +26,17 @@
     </div>
 
 
-    
-
     <div class="layui-main">
         <div class="layui-container">
-            <div class="layui-header header" style="background-color: #23262e;">
-                <div class="layui-col-md2" style="height: 60px; line-height: 60px; color:#fafafa; left: 10px; font-size: larger;"><span class="appName">YmFile</span> <span class="appVer" style="font-size: small;">v0.0.1</span></div>
+            <div class="layui-header header">
+                <div class="layui-col-md2 logo"><span class="appName">YmFile</span> <span class="appVer" style="font-size: small;">v0.0.1</span></div>
+                <div class="layui-col-md2 right-icon">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-console"></i></a>
+                    <a href="javascript:;"><i class="layui-icon layui-icon-set"></i></a>                    
+                </div>
             </div>
 
-            <div class="layui-row tools" style="margin: 20px;">
+            <div class="layui-row tools">
                 <div class="layui-col-md12">
                     <button type="button" class="layui-btn layui-btn-normal" id="action_upload">上传</button>
                     <button type="button" class="layui-btn layui-btn-normal actbtn" action="download">下载</button>
@@ -43,7 +47,7 @@
                 </div>
             </div>
 
-            <div class="layui-row" style="border: 2px solid orange; padding: 10px; min-height: 450px;">
+            <div class="layui-row explorer-main">
                 <div class="layui-row">当前路径: <span class="current_path">/</span></div>
                 
                 <div class="layui-row">
@@ -53,15 +57,15 @@
             
 
 
-            <div class="layui-footer footer" style="height: 50px; line-height:50px; background-color:#fafafa;">
-                <p style="text-align: center;">Copyright © 2022 <a href="https://github.com/yzimhao/ymfile" target="_blank">YmFile</a> MIT Licensed</p>
+            <div class="layui-footer footer">
+                <p>Copyright © 2022 <a href="https://github.com/yzimhao/ymfile" target="_blank">YmFile</a> MIT Licensed</p>
             </div>
 
 
-            <div class="upload_list_area layui-bg-gray" style="position: fixed; padding-bottom: 10px; bottom: 0px; border: 0; z-index:9900; display: none;">
-                <div class="close" style="position:absolute; right:0px; top:5px;z-index:9901;cursor: pointer;"><i class="layui-icon layui-icon-close-fill"></i></div>
+            <div class="upload_list_area layui-bg-gray">
+                <div class="close"><i class="layui-icon layui-icon-close-fill"></i></div>
                 <div class="layui-upload">
-                    <div class="layui-upload-list" style="width: 1140px;">
+                    <div class="layui-upload-list">
                       <table class="layui-table">
                         <colgroup>
                           <col>
@@ -90,6 +94,7 @@
 
 
 <script src="//www.layuicdn.com/layui/layui.js"></script>
+<script src="/statics/js/main.js"></script>
 <!--您的Layui代码start-->
 <script type="text/javascript">
     layui.use(['laydate', 'layer','element', 'upload', 'tree', 'util', 'table'], function () {
