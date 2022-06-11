@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -66,8 +67,10 @@ func softMain(c *gin.Context) {
 }
 
 func createDir(c *gin.Context) {
-	newDirName := c.PostForm("dirname")
 	curDir := c.PostForm("current_path")
+	newDirName := c.PostForm("dirname")
+
+	newDirName = strings.ReplaceAll(newDirName, "..", "")
 
 	dirpath := GloOptions.RootDir + "/" + curDir + "/" + newDirName
 	logrus.Infof("create dir name: %s", dirpath)
