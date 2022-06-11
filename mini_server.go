@@ -170,7 +170,7 @@ func getFiles(pathName string) []FileInfo {
 			ContentType:  getContentType(pathName + "/" + info.Name()),
 		})
 	}
-	return files
+	return sortFileList(files)
 }
 
 func getContentType(fileName string) string {
@@ -204,4 +204,18 @@ func fileSizeHuman(fbyte int64) string {
 		str = ">1TB"
 	}
 	return str
+}
+
+func sortFileList(ff []FileInfo) []FileInfo {
+	//文件夹在前
+	dir := make([]FileInfo, 0)
+	file := make([]FileInfo, 0)
+	for _, item := range ff {
+		if item.IsDir {
+			dir = append(dir, item)
+		} else {
+			file = append(file, item)
+		}
+	}
+	return append(dir, file...)
 }
