@@ -31,13 +31,14 @@ func Run() {
 }
 
 func startGin() {
-	route := gin.Default()
+	router := gin.Default()
 	gin.SetMode(gin.DebugMode)
 
-	route.LoadHTMLGlob("./*.html")
+	router.LoadHTMLGlob("./templates/default/*.html")
+	router.StaticFS("statics", http.Dir("./templates/default/statics"))
 
-	route.GET("/", index)
-	apiV1 := route.Group("/api/v1")
+	router.GET("/", index)
+	apiV1 := router.Group("/api/v1")
 	{
 		apiV1.GET("/main", softMain)
 		apiV1.GET("/filelist", fileList)
@@ -46,7 +47,7 @@ func startGin() {
 		apiV1.POST("/createdir", createDir)
 		apiV1.POST("/delete", delete)
 	}
-	route.Run(":8080")
+	router.Run(":8080")
 }
 
 func index(c *gin.Context) {
