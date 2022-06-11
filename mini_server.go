@@ -42,6 +42,7 @@ func startGin() {
 		apiV1.GET("/main", softMain)
 		apiV1.GET("/filelist", fileList)
 		apiV1.POST("/upload", upload)
+		apiV1.GET("/download", download)
 		apiV1.POST("/createdir", createDir)
 		apiV1.POST("/delete", delete)
 	}
@@ -112,6 +113,20 @@ func upload(c *gin.Context) {
 
 	logrus.Infof("upload file success: %s", savePath)
 	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
+}
+
+func download(c *gin.Context) {
+	curPath := c.Query("current_path")
+	file := c.Query("filename")
+
+	real := GloOptions.RootDir + curPath + file
+	fileContent, _ := ioutil.ReadFile(real)
+	//todo 是否存在
+	contentType := "application/octet-stream"
+	fileContentDisposition := "attachment;filename=\"" + file + "\""
+	c.Header("Content-Type", contentType)
+	c.Header("Content-Disposition", fileContentDisposition)
+	c.Data(http.StatusOK, contentType, fileContent)
 }
 
 func fileList(c *gin.Context) {

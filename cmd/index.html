@@ -34,7 +34,7 @@
             <div class="layui-row tools" style="margin: 20px;">
                 <div class="layui-col-md12">
                     <button type="button" class="layui-btn layui-btn-normal" id="action_upload">上传</button>
-                    <!-- <button type="button" class="layui-btn layui-btn-normal actbtn" action="download">下载</button> -->
+                    <button type="button" class="layui-btn layui-btn-normal actbtn" action="download">下载</button>
                     <button type="button" class="layui-btn layui-btn-normal actbtn" action="refresh">刷新</button>
                     <button type="button" class="layui-btn layui-btn-normal actbtn" action="mkdir">新建文件夹</button>
                     
@@ -205,6 +205,20 @@
                 });
             }else if( act == "refresh"){
                 reloadFilesExplorer();
+            }else if(act == "download"){
+                var checkObj = $(".layui-table input[type=checkbox]:checked"); 
+                if(checkObj.length == 0){
+                    layer.msg("请选择需要下载的文件");
+                    return;
+                }
+
+                checkObj.each(function(){
+                    var filename = $(this).parents("tr").find("td:eq(1)").attr("data-content");
+                    var downloadUrl = "/api/v1/download?current_path="+getCurrentPath()+"&filename="+ filename;
+                    window.open(downloadUrl);
+                });
+                
+                
             }else if(act == "delete"){                
                 var checkObj = $(".layui-table input[type=checkbox]:checked"); 
                 
