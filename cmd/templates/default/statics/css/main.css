@@ -28,12 +28,29 @@
 }
 
 .layui-container .explorer-main {
-    border: 2px solid orange; padding: 10px; min-height: 450px;
+    border: 1px dashed orange; 
+    border-radius: 5px;
+    padding: 10px; 
+    min-height: 450px;
+}
+
+.explorer-main .curr-menu {
+    overflow: hidden;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 10px;
+    border: 1px dashed #31BDEC;
+    border-radius: 5px;
+}
+
+.explorer-main .curr-menu .stats{
+    float: right;
 }
 
 
 .footer {
-    height: 50px; line-height:50px; background-color:#fafafa;
+    height: 50px; line-height:50px; background-color:#eee;
+    margin-top: 10px;
 }
 .footer p {
     text-align: center;
