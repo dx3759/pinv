@@ -1,9 +1,8 @@
 package ymfile
 
 import (
-	"fmt"
-
-	"github.com/prestonTao/upnp"
+	"github.com/sirupsen/logrus"
+	"gitlab.com/NebulousLabs/go-upnp"
 )
 
 type upnpstate struct {
@@ -13,19 +12,36 @@ type upnpstate struct {
 	ExternalIP string
 }
 
-var upnpState upnpstate
+var upnpInfo upnpstate
 
-func initUpnp() {
-	upnpState = upnpstate{
+func registerUpnp() {
+	upnpInfo = upnpstate{
 		LocalPort: GloOptions.Port,
 		Enable:    false,
 	}
 
-	mapping := new(upnp.Upnp)
-	if err := mapping.AddPortMapping(8080, 8080, "TCP"); err != nil {
-		fmt.Println("fail !")
+	d, err := upnp.Discover()
+	if err != nil {
+		logrus.Warn("upnp ", err.Error())
+		return
 	}
 
-	fmt.Println("success !")
-	upnpState.Enable = true
+	ip, err := d.ExternalIP()
+	if err != nil {
+		logrus.Warn("upnp external ip ", err.Error())
+		return
+	}
+
+	logrus.Debug("upnp your external ip is ", ip)
+
+	err = d.Forward(uint16(GloOptions.Port), GloOptions.AppName())
+	if err != nil {
+		logrus.Warn("upnp forward ", err.Error())
+		return
+	}
+	upnpInfo.Enable = true
+	upnpInfo.ExternalIP = ip
+	upnpInfo.RemotePort = upnpInfo.LocalPort
+
+	logrus.Errorf("%+v", upnpInfo)
 }

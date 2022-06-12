@@ -26,7 +26,7 @@ type FileInfo struct {
 }
 
 func Run() {
-	go initUpnp()
+	go registerUpnp()
 	startGin()
 }
 
