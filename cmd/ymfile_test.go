@@ -30,14 +30,15 @@ func Test_ping(t *testing.T) {
 	})
 }
 
-func Test_Create(t *testing.T) {
+func Test_base(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testMap := map[string][]string{
-		"根目录下创建文件夹": []string{"/", "test1", "/test1/"},
-		"子目录下创建文件夹": []string{"/test1", "test2", "/test1/test2/"},
-		"目录名称包含.":   []string{"/", "./test3", "/test3"},
-		"目录名称包含..":  []string{"/", "../abc", "/abc"},
+		"根目录下创建文件夹":  []string{"/", "test1", "/test1/"},
+		"子目录下创建文件夹":  []string{"/test1", "test2", "/test1/test2/"},
+		"目录名称包含.":    []string{"/", "./test3", "/test3"},
+		"目录名称包含..":   []string{"/", "../abc", "/abc"},
+		"目录名称包含多个..": []string{"/", "../../../ab2", "/ab2"},
 	}
 
 	for tn, item := range testMap {
@@ -49,7 +50,17 @@ func Test_Create(t *testing.T) {
 		Convey(tn, t, func() {
 			newDir := ymfile.GloOptions.RootDir + item[2]
 			So(fsutil.DirExist(newDir), ShouldEqual, true)
+			fsutil.DeleteIfExist(newDir)
 		})
 	}
 
+	Convey("删除文件夹", t, func() {
+		body := bytes.NewBufferString("current_path=/&dirname=test1")
+		req, _ := http.NewRequest("POST", "/api/v1/delete", body)
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+		router.ServeHTTP(w, req)
+
+		So(fsutil.DeleteIfExist(ymfile.GloOptions.RootDir+"/test1"), ShouldBeNil)
+		So(fsutil.DirExist(ymfile.GloOptions.RootDir+"/test1"), ShouldBeFalse)
+	})
 }
