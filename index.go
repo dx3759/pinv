@@ -1,3 +1,0 @@
-package ymfile
-
-var indexHtmlString = ``
