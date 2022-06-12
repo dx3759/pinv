@@ -26,12 +26,13 @@ type FileInfo struct {
 }
 
 func Run() {
+	go initUpnp()
 	startGin()
 }
 
 func startGin() {
 	router := SetupRouter()
-	router.Run(":8080")
+	router.Run(fmt.Sprintf("%s:%d", GloOptions.Host, GloOptions.Port))
 }
 
 func SetupRouter() *gin.Engine {
@@ -52,6 +53,7 @@ func SetupRouter() *gin.Engine {
 		apiV1.GET("/download", download)
 		apiV1.POST("/createdir", createDir)
 		apiV1.POST("/delete", delete)
+
 	}
 	return router
 }

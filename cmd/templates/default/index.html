@@ -17,8 +17,18 @@
         </div>
         <button class="layui-btn createdir">创建</button>
     </div>
-    
 </script>
+
+
+<script type="text/tpl" id="sys_info">
+    <div class="layui-row" style="padding:20px;">
+        <table class="layui-table">
+            <tr><td>UPnP</td><td>V</td><td>外网ip:9090</td></tr>
+        </table>
+    </div>
+</script>
+
+
 
 <body>
     <div style="position: fixed; top: 0; right: 0; border: 0; z-index:9999;">
@@ -31,8 +41,8 @@
             <div class="layui-header header">
                 <div class="layui-col-md2 logo"><span class="appName">{{ appInfo "appname" }}</span><span class="appVer">{{ appInfo "version" }}</span></div>
                 <div class="layui-col-md2 right-icon">
-                    <a href="javascript:;"><i class="layui-icon layui-icon-console"></i></a>
-                    <a href="javascript:;"><i class="layui-icon layui-icon-set"></i></a>                    
+                    <a href="javascript:;" class="sys_info"><i class="layui-icon layui-icon-console"></i></a>
+                    <a href="javascript:;" class="sys_set"><i class="layui-icon layui-icon-set"></i></a>                    
                 </div>
             </div>
 
@@ -295,6 +305,15 @@
                 url: '/api/v1/upload?current_path='+ getCurrentPath()
             });
         });
+        //sys_info
+        $("body").on("click", ".sys_info", function(){
+            layer.open({
+                type: 1,
+                area: ['800px', '600px'], 
+                title: "系统信息",
+                content: $("#sys_info").html()
+            });
+        })
 
 
 

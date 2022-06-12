@@ -1,25 +1,25 @@
 package ymfile
 
-type Options struct {
+type options struct {
 	Host    string
 	Port    int
 	RootDir string
 }
 
-var GloOptions Options
+var GloOptions options
 
 func init() {
-	GloOptions = Options{
-		Host:    "localhost",
+	GloOptions = options{
+		Host:    "0.0.0.0",
 		Port:    8080,
 		RootDir: "./www/",
 	}
 }
 
-func (o Options) AppName() string {
+func (o options) AppName() string {
 	return "YMFile"
 }
 
-func (o Options) Version() string {
+func (o options) Version() string {
 	return "v0.0.1"
 }
