@@ -79,7 +79,7 @@ func softMain(c *gin.Context) {
 		"app_name":    GloOptions.AppName(),
 		"app_version": GloOptions.Version(),
 		"support": gin.H{
-			"upnp": upnpInfo,
+			"UPnP": upnpInfo,
 		},
 	})
 }
