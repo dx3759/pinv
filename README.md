@@ -1,2 +1,16 @@
-# yfmini
-yfmini 一个极简的安全的基于http的文件管理服务，只需一行命令即可快速安装启动，方便临时需要远程管理文件的需求
+# YMFile
+YMFile 文件分享系统
+
+只需要一行命令，即可开启局域网/外网文件上传和下载。
+```shell
+mkdir share_dir
+cd share_dir/
+ymfile -d
+```
+
+服务检查
+```
+curl http://127.0.0.1:8080/ping
+```
+
+
