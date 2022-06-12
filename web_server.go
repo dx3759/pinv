@@ -78,6 +78,9 @@ func softMain(c *gin.Context) {
 	formatResponse(c, true, "", gin.H{
 		"app_name":    GloOptions.AppName(),
 		"app_version": GloOptions.Version(),
+		"support": gin.H{
+			"upnp": upnpInfo,
+		},
 	})
 }
 
