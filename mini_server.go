@@ -26,8 +26,6 @@ type FileInfo struct {
 }
 
 func Run() {
-	// http.Handle("/", http.FileServer(http.Dir(opt.Dir)))
-	// http.ListenAndServe(":8080", nil)
 	startGin()
 }
 
@@ -35,6 +33,7 @@ func startGin() {
 	router := gin.Default()
 	gin.SetMode(gin.DebugMode)
 
+	router.SetFuncMap(templateFuncMap())
 	router.LoadHTMLGlob("./templates/default/*.html")
 	router.StaticFS("statics", http.Dir("./templates/default/statics"))
 
@@ -52,11 +51,7 @@ func startGin() {
 }
 
 func index(c *gin.Context) {
-	if gin.Mode() == gin.DebugMode {
-		c.HTML(http.StatusOK, "index.html", nil)
-	} else {
-		c.Data(http.StatusOK, "text/html", []byte(indexHtmlString))
-	}
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 func softMain(c *gin.Context) {

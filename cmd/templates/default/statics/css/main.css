@@ -10,6 +10,11 @@
     left: 10px; 
     font-size: larger;
 }
+.header .logo .appVer {
+    font-size: small;
+    margin-left: 5px;
+    font-style: oblique;
+}
 
 .header .right-icon {
     float: right;
@@ -25,7 +30,15 @@
 
 
 .layui-container .tools {
-    margin: 20px;
+    margin: 10px 0px 10px 0px;
+    padding: 10px;
+    background-color: #eee;
+}
+
+.set-top {
+    position: fixed;
+    top: 0;
+    z-index: 99999;
 }
 
 .layui-container .explorer-main {
