@@ -58,6 +58,14 @@ func SetupRouter() *gin.Engine {
 	return router
 }
 
+func formatResponse(c *gin.Context, ok bool, reason string, data interface{}) {
+	if ok {
+		c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: data})
+	} else {
+		c.JSON(http.StatusOK, &response{Ok: false, Reason: reason, Data: nil})
+	}
+}
+
 func ping(c *gin.Context) {
 	c.String(200, "pong")
 }
@@ -67,10 +75,10 @@ func index(c *gin.Context) {
 }
 
 func softMain(c *gin.Context) {
-	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: gin.H{
+	formatResponse(c, true, "", gin.H{
 		"app_name":    GloOptions.AppName(),
 		"app_version": GloOptions.Version(),
-	}})
+	})
 }
 
 func createDir(c *gin.Context) {
@@ -85,9 +93,10 @@ func createDir(c *gin.Context) {
 	err := os.MkdirAll(dirpath, os.ModeDir)
 
 	if err != nil {
-		c.JSON(http.StatusOK, &response{Ok: false, Reason: err.Error(), Data: nil})
+		formatResponse(c, false, err.Error(), nil)
+		return
 	}
-	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
+	formatResponse(c, true, "", nil)
 }
 
 func delete(c *gin.Context) {
@@ -103,14 +112,15 @@ func delete(c *gin.Context) {
 		logrus.Info("delete file ", item, fullPath)
 		os.Remove(fullPath)
 	}
-	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
+
+	formatResponse(c, true, "", nil)
 }
 
 func upload(c *gin.Context) {
 	curPath := c.Query("current_path")
 	file, _ := c.FormFile("file")
 	if curPath == "" {
-		c.JSON(http.StatusOK, &response{Ok: false, Reason: "current path error"})
+		formatResponse(c, false, "current path error", nil)
 		return
 	}
 
@@ -118,12 +128,12 @@ func upload(c *gin.Context) {
 	err := c.SaveUploadedFile(file, savePath)
 	if err != nil {
 		logrus.Errorf("upload file error: %v", err)
-		c.JSON(http.StatusOK, &response{Ok: false, Reason: "upload file error: %v"})
+		formatResponse(c, false, fmt.Sprintf("upload file error: %v", err), nil)
 		return
 	}
 
 	logrus.Infof("upload file success: %s", savePath)
-	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: nil})
+	formatResponse(c, true, "", nil)
 }
 
 func download(c *gin.Context) {
@@ -152,7 +162,7 @@ func fileList(c *gin.Context) {
 
 	logrus.Info(GloOptions.RootDir, "  ", current_path)
 
-	c.JSON(http.StatusOK, &response{Ok: true, Reason: "", Data: gin.H{"path": current_path, "files": getFiles(current_path)}})
+	formatResponse(c, true, "", gin.H{"path": current_path, "files": getFiles(current_path)})
 }
 
 func getFiles(pathName string) []FileInfo {
