@@ -30,6 +30,11 @@ func Run() {
 }
 
 func startGin() {
+	router := SetupRouter()
+	router.Run(":8080")
+}
+
+func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	gin.SetMode(gin.DebugMode)
 
@@ -38,6 +43,7 @@ func startGin() {
 	router.StaticFS("statics", http.Dir("./templates/default/statics"))
 
 	router.GET("/", index)
+	router.GET("/ping", ping)
 	apiV1 := router.Group("/api/v1")
 	{
 		apiV1.GET("/main", softMain)
@@ -47,7 +53,11 @@ func startGin() {
 		apiV1.POST("/createdir", createDir)
 		apiV1.POST("/delete", delete)
 	}
-	router.Run(":8080")
+	return router
+}
+
+func ping(c *gin.Context) {
+	c.String(200, "pong")
 }
 
 func index(c *gin.Context) {
