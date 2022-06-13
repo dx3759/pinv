@@ -214,6 +214,16 @@
                                 case 'image/webp':
                                 case 'image/x-icon':
                                     icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
+                                case 'video/x-flv':
+                                case 'video/mp4':
+                                case 'application/x-mpegURL':
+                                case 'video/3gpp':
+                                case 'video/quicktime':
+                                case 'video/x-msvideo':
+                                case 'video/x-ms-wmv':
+                                    icon = '<i class="layui-icon layui-icon-play"></i>';
+                                    icon = '<a href="javascript:;" class="play-video">'+icon+'</a>';
+                                    break;
 
                                 case 'application/pdf':
                                     icon = '<i class="layui-icon layui-icon-picture"></i>'; break;
