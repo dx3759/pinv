@@ -10,3 +10,5 @@ COMMIT_SHA1=`git rev-parse HEAD`
 
 CGO_ENABLED=0
 go build -ldflags "-X ${Package}.VERSION=${version} -X ${Package}.BUILD=${Build_time} -X ${Package}.COMMIT_SHA1=${COMMIT_SHA1} -X '${Package}.GO_VERSION=`go version`'" -o dist/ymfile  cmd/ymfile.go
+
+cp -rf dist/ymfile $GOPATH/bin/ymfile

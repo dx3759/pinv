@@ -15,7 +15,7 @@ import (
 var router *gin.Engine
 
 func init() {
-	router = ymfile.SetupRouter()
+	router = ymfile.SetupRouter(emfs)
 }
 
 func Test_ping(t *testing.T) {
