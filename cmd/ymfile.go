@@ -1,10 +1,14 @@
 package main
 
 import (
+	"embed"
 	"flag"
 
 	"github.com/yzimhao/ymfile"
 )
+
+//go:embed templates/*
+var emfs embed.FS
 
 func main() {
 	version := flag.Bool("version", false, "show version")
@@ -13,5 +17,5 @@ func main() {
 	if *version {
 		ymfile.ShowVersion()
 	}
-	ymfile.Run()
+	ymfile.Run(emfs)
 }

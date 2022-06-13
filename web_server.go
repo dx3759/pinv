@@ -1,7 +1,10 @@
 package ymfile
 
 import (
+	"embed"
 	"fmt"
+	"html/template"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -25,23 +28,31 @@ type FileInfo struct {
 	ContentType  string `json:"content_type"`
 }
 
-func Run() {
+func Run(emfs embed.FS) {
 	go registerUpnp()
-	startGin()
+	startGin(emfs)
 }
 
-func startGin() {
-	router := SetupRouter()
+func startGin(emfs embed.FS) {
+	router := SetupRouter(emfs)
 	router.Run(fmt.Sprintf("%s:%d", GloOptions.Host, GloOptions.Port))
 }
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(emfs embed.FS) *gin.Engine {
 	router := gin.Default()
 	gin.SetMode(gin.DebugMode)
 
-	router.SetFuncMap(templateFuncMap())
-	router.LoadHTMLGlob("./templates/default/*.html")
-	router.StaticFS("statics", http.Dir("./templates/default/statics"))
+	// router.SetFuncMap(templateFuncMap())
+	// router.LoadHTMLGlob("./templates/default/*.html")
+	// router.StaticFS("statics", http.Dir("./templates/default/statics"))
+
+	// embed files
+	tmpl := template.New("").Funcs(templateFuncMap())
+	tmpl = template.Must(tmpl.ParseFS(emfs, "templates/default/*.html"))
+	router.SetHTMLTemplate(tmpl)
+
+	fp, _ := fs.Sub(emfs, "templates/default/statics")
+	router.StaticFS("/statics", http.FS(fp))
 
 	router.GET("/", index)
 	router.GET("/ping", ping)
