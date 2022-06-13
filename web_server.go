@@ -93,7 +93,7 @@ func createDir(c *gin.Context) {
 	dirpath := GloOptions.RootDir + "/" + curDir + "/" + newDirName
 	logrus.Infof("create dir name: %s", dirpath)
 
-	err := os.MkdirAll(dirpath, os.ModeDir)
+	err := os.MkdirAll(dirpath, os.ModePerm)
 
 	if err != nil {
 		formatResponse(c, false, err.Error(), nil)

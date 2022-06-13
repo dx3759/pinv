@@ -154,7 +154,8 @@
                         });
                         tr_upnp.find("td:eq(2)").html(function(){
                             if(upnp.Enable){
-                                return "//" + upnp.ExternalIP+":" + upnp.RemotePort;
+                                var ahref =  "http://" + upnp.ExternalIP+":" + upnp.RemotePort;
+                                return "<a href='"+ahref+"' target='_blank'>"+ahref+"</a>";
                             }
                         });
 
