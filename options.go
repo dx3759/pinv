@@ -21,5 +21,5 @@ func (o options) AppName() string {
 }
 
 func (o options) Version() string {
-	return "v0.0.1"
+	return VERSION
 }
