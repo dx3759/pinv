@@ -8,10 +8,10 @@ type options struct {
 	AllowDelete bool
 }
 
-var GloOptions options
+var Options options
 
 func init() {
-	GloOptions = options{
+	Options = options{
 		Host:    "0.0.0.0",
 		Port:    8080,
 		RootDir: "./www/",

@@ -35,7 +35,7 @@ func Run(emfs embed.FS) {
 
 func startGin(emfs embed.FS) {
 	router := SetupRouter(emfs)
-	router.Run(fmt.Sprintf("%s:%d", GloOptions.Host, GloOptions.Port))
+	router.Run(fmt.Sprintf("%s:%d", Options.Host, Options.Port))
 }
 
 func SetupRouter(emfs embed.FS) *gin.Engine {
@@ -87,8 +87,8 @@ func index(c *gin.Context) {
 
 func softMain(c *gin.Context) {
 	formatResponse(c, true, "", gin.H{
-		"app_name":    GloOptions.AppName(),
-		"app_version": GloOptions.Version(),
+		"app_name":    Options.AppName(),
+		"app_version": Options.Version(),
 		"support": gin.H{
 			"UPnP": upnpInfo,
 		},
@@ -101,7 +101,7 @@ func createDir(c *gin.Context) {
 
 	newDirName = strings.ReplaceAll(newDirName, "..", "")
 
-	dirpath := GloOptions.RootDir + "/" + curDir + "/" + newDirName
+	dirpath := Options.RootDir + "/" + curDir + "/" + newDirName
 	logrus.Infof("create dir name: %s", dirpath)
 
 	err := os.MkdirAll(dirpath, os.ModePerm)
@@ -117,7 +117,7 @@ func delete(c *gin.Context) {
 	curPath := c.PostForm("current_path")
 	fileNames := c.PostFormArray("filename[]")
 
-	if !GloOptions.AllowDelete {
+	if !Options.AllowDelete {
 		formatResponse(c, false, "delete file is not allowed", nil)
 		return
 	}
@@ -126,7 +126,7 @@ func delete(c *gin.Context) {
 		if item == "" || item == ".." || item == "." {
 			continue
 		}
-		fullPath := fmt.Sprintf("%s/%s/%s", GloOptions.RootDir, curPath, item)
+		fullPath := fmt.Sprintf("%s/%s/%s", Options.RootDir, curPath, item)
 		//todo exist
 		logrus.Info("delete file ", item, fullPath)
 		os.Remove(fullPath)
@@ -143,7 +143,7 @@ func upload(c *gin.Context) {
 		return
 	}
 
-	savePath := GloOptions.RootDir + curPath + "/" + file.Filename
+	savePath := Options.RootDir + curPath + "/" + file.Filename
 	err := c.SaveUploadedFile(file, savePath)
 	if err != nil {
 		logrus.Errorf("upload file error: %v", err)
@@ -159,7 +159,7 @@ func download(c *gin.Context) {
 	curPath := c.Query("current_path")
 	file := c.Query("filename")
 
-	real := GloOptions.RootDir + curPath + file
+	real := Options.RootDir + curPath + file
 	fileContent, _ := ioutil.ReadFile(real)
 	//todo 是否存在
 	contentType := "application/octet-stream"
@@ -174,12 +174,12 @@ func fileList(c *gin.Context) {
 	current_path := c.Query("current_path")
 
 	if current_path == "" {
-		current_path = GloOptions.RootDir
+		current_path = Options.RootDir
 	} else {
-		current_path = fmt.Sprintf("%s%s", GloOptions.RootDir, current_path)
+		current_path = fmt.Sprintf("%s%s", Options.RootDir, current_path)
 	}
 
-	logrus.Info(GloOptions.RootDir, "  ", current_path)
+	logrus.Info(Options.RootDir, "  ", current_path)
 
 	formatResponse(c, true, "", gin.H{"path": current_path, "files": getFiles(current_path)})
 }
@@ -188,7 +188,7 @@ func getFiles(pathName string) []FileInfo {
 	files := make([]FileInfo, 0)
 
 	logrus.Warn(pathName)
-	if pathName != GloOptions.RootDir {
+	if pathName != Options.RootDir {
 		files = append(files, FileInfo{
 			Name:  "..",
 			IsDir: true,

@@ -16,7 +16,7 @@ var upnpInfo upnpstate
 
 func registerUpnp() {
 	upnpInfo = upnpstate{
-		LocalPort: GloOptions.Port,
+		LocalPort: Options.Port,
 		Enable:    false,
 	}
 
@@ -34,7 +34,7 @@ func registerUpnp() {
 
 	logrus.Debug("upnp your external ip is ", ip)
 
-	err = d.Forward(uint16(GloOptions.Port), GloOptions.AppName())
+	err = d.Forward(uint16(Options.Port), Options.AppName())
 	if err != nil {
 		logrus.Warn("upnp forward ", err.Error())
 		return

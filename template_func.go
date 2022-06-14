@@ -12,9 +12,9 @@ func appInfo(key string) string {
 	v := ""
 	switch key {
 	case "appname":
-		v = GloOptions.AppName()
+		v = Options.AppName()
 	case "version":
-		v = GloOptions.Version()
+		v = Options.Version()
 	}
 	return v
 }
