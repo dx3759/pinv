@@ -29,6 +29,7 @@ type FileInfo struct {
 }
 
 func Run(emfs embed.FS) {
+	go systrayRun()
 	go registerUpnp()
 	startGin(emfs)
 }
