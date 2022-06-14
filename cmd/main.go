@@ -44,7 +44,7 @@ func main() {
 		Commands: []*cli.Command{
 			{
 				Name:    "version",
-				Aliases: []string{"c"},
+				Aliases: []string{"v"},
 				Usage:   "show version",
 				Action: func(c *cli.Context) error {
 					pinv.ShowVersion()

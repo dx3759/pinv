@@ -1,11 +1,9 @@
 # pinv
-pinv 文件分享系统
+pinv 局域网文件分享系统
 
-只需要一行命令，即可开启局域网/外网文件上传和下载。
+只需要一行命令，即可开启局域网/外网文件远程管理
 ```shell
-mkdir share_dir
-cd share_dir/
-pinv -d
+pinv
 ```
 
 服务检查
