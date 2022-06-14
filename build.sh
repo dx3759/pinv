@@ -9,6 +9,6 @@ Build_time=`date +%FT%T%z`
 COMMIT_SHA1=`git rev-parse HEAD`
 
 CGO_ENABLED=0
-go build -ldflags "-X ${Package}.VERSION=${version} -X ${Package}.BUILD=${Build_time} -X ${Package}.COMMIT_SHA1=${COMMIT_SHA1} -X '${Package}.GO_VERSION=`go version`'" -o dist/pinv  cmd/main.go
+go build  -ldflags="-H windowsgui" -ldflags "-X ${Package}.VERSION=${version} -X ${Package}.BUILD=${Build_time} -X ${Package}.COMMIT_SHA1=${COMMIT_SHA1} -X '${Package}.GO_VERSION=`go version`'" -o dist/pinv  cmd/main.go
 
 cp -rf dist/pinv $GOPATH/bin/pinv
