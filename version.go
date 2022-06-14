@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	VERSION     = ""
+	VERSION     = "v0.0.0"
 	BUILD       = "2016-11-18 16:40:00"
 	COMMIT_SHA1 = ""
 	GO_VERSION  = ""
