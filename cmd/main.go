@@ -33,11 +33,16 @@ func main() {
 				Value: "./",
 				Usage: "root directory",
 			},
+			&cli.BoolFlag{
+				Name:  "allow-delete",
+				Usage: "allow delete files",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			pinv.GloOptions.Host = c.String("host")
 			pinv.GloOptions.Port = c.Int("port")
 			pinv.GloOptions.RootDir = c.String("root")
+			pinv.GloOptions.AllowDelete = c.Bool("allow-delete")
 			pinv.Run(emfs)
 			return nil
 		},

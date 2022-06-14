@@ -306,6 +306,9 @@
                                 if(d.ok){
                                     reloadFilesExplorer();
                                     layer.close(layer.index);                                    
+                                }else{
+                                    layer.close(layer.index);
+                                    layer.msg(d.reason);
                                 }
                             }
 

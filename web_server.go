@@ -117,6 +117,11 @@ func delete(c *gin.Context) {
 	curPath := c.PostForm("current_path")
 	fileNames := c.PostFormArray("filename[]")
 
+	if !GloOptions.AllowDelete {
+		formatResponse(c, false, "delete file is not allowed", nil)
+		return
+	}
+
 	for _, item := range fileNames {
 		if item == "" || item == ".." || item == "." {
 			continue

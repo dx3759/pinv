@@ -4,6 +4,8 @@ type options struct {
 	Host    string
 	Port    int
 	RootDir string
+
+	AllowDelete bool
 }
 
 var GloOptions options
