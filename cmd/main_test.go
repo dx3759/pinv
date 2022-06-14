@@ -9,13 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gookit/goutil/fsutil"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/yzimhao/ymfile"
+	"github.com/yzimhao/pinv"
 )
 
 var router *gin.Engine
 
 func init() {
-	router = ymfile.SetupRouter(emfs)
+	router = pinv.SetupRouter(emfs)
 }
 
 func Test_ping(t *testing.T) {
@@ -48,7 +48,7 @@ func Test_base(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		Convey(tn, t, func() {
-			newDir := ymfile.GloOptions.RootDir + item[2]
+			newDir := pinv.GloOptions.RootDir + item[2]
 			So(fsutil.DirExist(newDir), ShouldEqual, true)
 			fsutil.DeleteIfExist(newDir)
 		})
@@ -60,7 +60,7 @@ func Test_base(t *testing.T) {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 		router.ServeHTTP(w, req)
 
-		So(fsutil.DeleteIfExist(ymfile.GloOptions.RootDir+"/test1"), ShouldBeNil)
-		So(fsutil.DirExist(ymfile.GloOptions.RootDir+"/test1"), ShouldBeFalse)
+		So(fsutil.DeleteIfExist(pinv.GloOptions.RootDir+"/test1"), ShouldBeNil)
+		So(fsutil.DirExist(pinv.GloOptions.RootDir+"/test1"), ShouldBeFalse)
 	})
 }

@@ -1,4 +1,4 @@
-package ymfile
+package pinv
 
 type options struct {
 	Host    string
@@ -17,7 +17,7 @@ func init() {
 }
 
 func (o options) AppName() string {
-	return "YMFile"
+	return "Pinv"
 }
 
 func (o options) Version() string {

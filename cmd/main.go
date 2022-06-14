@@ -6,7 +6,7 @@ import (
 	"os"
 
 	cli "github.com/urfave/cli/v2"
-	"github.com/yzimhao/ymfile"
+	"github.com/yzimhao/pinv"
 )
 
 //go:embed templates/*
@@ -15,8 +15,8 @@ var emfs embed.FS
 func main() {
 
 	app := &cli.App{
-		Name:  "ymfile",
-		Usage: "ymfile is a tool for managing your files",
+		Name:  "pinv",
+		Usage: "pinv is a tool for managing your files",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "host",
@@ -35,10 +35,10 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			ymfile.GloOptions.Host = c.String("host")
-			ymfile.GloOptions.Port = c.Int("port")
-			ymfile.GloOptions.RootDir = c.String("root")
-			ymfile.Run(emfs)
+			pinv.GloOptions.Host = c.String("host")
+			pinv.GloOptions.Port = c.Int("port")
+			pinv.GloOptions.RootDir = c.String("root")
+			pinv.Run(emfs)
 			return nil
 		},
 		Commands: []*cli.Command{
@@ -47,7 +47,7 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "show version",
 				Action: func(c *cli.Context) error {
-					ymfile.ShowVersion()
+					pinv.ShowVersion()
 					return nil
 				},
 			},

@@ -1,4 +1,4 @@
-package ymfile
+package pinv
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package ymfile
+package pinv
 
 import (
 	"github.com/sirupsen/logrus"

@@ -4,11 +4,11 @@
 # go-bindata -o=bindata/bindata.go -pkg=bindata ./cmd/templates/...
 
 version="v0.0.2"
-Package="github.com/yzimhao/ymfile"
+Package="github.com/yzimhao/pinv"
 Build_time=`date +%FT%T%z`
 COMMIT_SHA1=`git rev-parse HEAD`
 
 CGO_ENABLED=0
-go build -ldflags "-X ${Package}.VERSION=${version} -X ${Package}.BUILD=${Build_time} -X ${Package}.COMMIT_SHA1=${COMMIT_SHA1} -X '${Package}.GO_VERSION=`go version`'" -o dist/ymfile  cmd/ymfile.go
+go build -ldflags "-X ${Package}.VERSION=${version} -X ${Package}.BUILD=${Build_time} -X ${Package}.COMMIT_SHA1=${COMMIT_SHA1} -X '${Package}.GO_VERSION=`go version`'" -o dist/pinv  cmd/mian.go
 
-cp -rf dist/ymfile $GOPATH/bin/ymfile
+cp -rf dist/pinv $GOPATH/bin/pinv
